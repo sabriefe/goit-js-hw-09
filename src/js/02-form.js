@@ -1,21 +1,23 @@
 'use strict';
-const form = document.querySelector('.feedback-form');
-const storageKey = 'feedback-form-state';
 
-window.addEventListener('DOMContentLoaded', () => {
-  const localData = JSON.parse(localStorage.getItem(storageKey));
-  if(localData){
-    form.email.value = localData.email || '';
-    form.message.value = localData.message || '';
-  }
+const formElement = document.querySelector('.feedback-form');
+
+formElement.addEventListener('input', event =>{
+  event.preventDefault();
+  const mail = formElement.email.value;
+  const msg = formElement.message.value;
+  localStorage.setItem('feedback-form-state', JSON.stringify({email : mail, message : msg}));
 });
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const {email, message} = form;
-  const data = {
-    email : email.value,
-    message : message.value,
-  };
-  localStorage.setItem(storageKey, JSON.stringify(data));
-  form.reset();
+window.addEventListener('DOMContentLoaded', () => {
+  if(!localStorage.getItem('feedback-form-state')) return;
+  const item = JSON.parse(localStorage.getItem('feedback-form-state'));
+  formElement.email.value = item.email;
+  formElement.message.value = item.message;
+});
+formElement.addEventListener('submit', event => {
+  event.preventDefault();
+  if(!localStorage.getItem('feedback-form-state')) return;
+  console.log(JSON.parse(localStorage.getItem('feedback-form-state')));
+  localStorage.removeItem('feedback-form-state');
+  formElement.reset();
 });
